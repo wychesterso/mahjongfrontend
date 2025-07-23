@@ -1,12 +1,23 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 const LoginPage = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const auth = useAuth();
+
+    const handleAuthSuccess = (token: string) => {
+        const decoded = jwtDecode(token);
+        const usernameFromToken = decoded.sub || decoded.username || "unknown";
+
+        auth.login(token, { username: usernameFromToken });
+        navigate("/lobby");
+    };
 
     const handleLogin = async () => {
         try {
@@ -15,10 +26,9 @@ const LoginPage = () => {
                 password,
             });
 
-            localStorage.setItem("token", response.data);
-            navigate("/lobby");
+            handleAuthSuccess(response.data);
         } catch (err: any) {
-            setError("Login failed: " + err.response?.data?.message || err.message);
+            setError("Login failed: " + (err.response?.data?.message || err.message));
         }
     };
 
@@ -29,10 +39,9 @@ const LoginPage = () => {
                 password,
             });
 
-            localStorage.setItem("token", response.data);
-            navigate("/lobby");
+            handleAuthSuccess(response.data);
         } catch (err: any) {
-            setError("Register failed: " + err.response?.data?.message || err.message);
+            setError("Register failed: " + (err.response?.data?.message || err.message));
         }
     };
 
