@@ -8,19 +8,24 @@ export async function getAvailableRooms() {
     return res.data;
 }
 
-export async function getLobbyState(roomId: string) {
-    const res = await axios.get(`${BASE_URL}/rooms/${roomId}`, getAuthHeader());
+export async function createRoom() {
+    const res = await axios.post(`${BASE_URL}/room/create`, {}, getAuthHeader());
+    return res.data.roomId;
+}
+
+export async function getRoomInfo(roomId: string) {
+    const res = await axios.get(`${BASE_URL}/room/${roomId}`, getAuthHeader());
     return res.data;
 }
 
 export async function addBot(roomId: string) {
-    await axios.post(`${BASE_URL}/rooms/${roomId}/add-bot`, {}, getAuthHeader());
+    await axios.post(`${BASE_URL}/room/${roomId}/add-bot`, {}, getAuthHeader());
 }
 
 export async function startGame(roomId: string) {
-    await axios.post(`${BASE_URL}/rooms/${roomId}/start`, {}, getAuthHeader());
+    await axios.post(`${BASE_URL}/room/${roomId}/start`, {}, getAuthHeader());
 }
 
 export async function leaveRoom(roomId: string) {
-    await axios.post(`${BASE_URL}/rooms/${roomId}/exit`, {}, getAuthHeader());
+    await axios.post(`${BASE_URL}/room/${roomId}/exit`, {}, getAuthHeader());
 }
