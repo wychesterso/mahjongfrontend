@@ -26,6 +26,11 @@ export async function startGame(roomId: string) {
     await axios.post(`${BASE_URL}/room/${roomId}/start`, {}, getAuthHeader());
 }
 
+export async function joinRoom(roomId: string, seat: string) {
+    const params = new URLSearchParams({ seat });
+    await axios.post(`${BASE_URL}/room/${roomId}/join?${params}`, {}, getAuthHeader());
+}
+
 export async function leaveRoom(roomId: string) {
     await axios.post(`${BASE_URL}/room/${roomId}/exit`, {}, getAuthHeader());
 }

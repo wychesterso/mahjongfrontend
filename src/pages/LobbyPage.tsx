@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAvailableRooms, createRoom } from "../api/lobbyApi";
+import { getAvailableRooms, getRoomInfo, createRoom, joinRoom } from "../api/lobbyApi";
 import { useAuth } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -38,8 +38,31 @@ export default function LobbyPage() {
         }
     }
 
-    const handleJoinRoom = (roomId: string) => {
-        navigate(`/room/${roomId}`);
+    const handleJoinRoom = async (roomId: string) => {
+        try {
+            const room = await getRoomInfo(roomId);
+            const currentPlayer = user?.username;
+
+            const playerAlreadyJoined = Object.values(room.playerNames).includes(currentPlayer);
+            if (!playerAlreadyJoined) {
+                const allSeats = ["EAST", "SOUTH", "WEST", "NORTH"];
+                const takenSeats = Object.keys(room.playerNames);
+                const availableSeats = allSeats.filter(seat => !takenSeats.includes(seat));
+
+                if (availableSeats.length === 0) {
+                    alert("Room full!");
+                    return;
+                }
+
+                const randomSeat = availableSeats[Math.floor(Math.random() * availableSeats.length)];
+                await joinRoom(roomId, randomSeat);
+            }
+
+            navigate(`/room/${roomId}`);
+        } catch (e) {
+            console.error("Failed to join room: ", e);
+            alert("Failed to join room!");
+        }
     };
 
     if (!user) return <div>Loading...</div>

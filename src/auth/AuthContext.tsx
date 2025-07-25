@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { attachAuthInterceptor } from "../api/auth";
 
 interface User {
     username: string;
@@ -35,16 +36,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     useEffect(() => {
-        const storedToken = localStorage.getItem('token');
-        const storedUser = localStorage.getItem('user');
-
-        if (storedToken && storedUser) {
-            setToken(storedToken);
-            setUser(JSON.parse(storedUser));
-        } else {
-            setToken(null);
-            setUser(null);
-        }
+        attachAuthInterceptor(logout);
     }, []);
 
     return (
