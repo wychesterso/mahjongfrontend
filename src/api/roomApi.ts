@@ -7,3 +7,7 @@ export async function getRoomInfo(roomId: string) {
     const res = await axios.get(`${BASE_URL}/room/${roomId}`, getAuthHeader());
     return res.data;
 }
+
+export async function exitRoom(roomId: string) {
+    await axios.post(`${BASE_URL}/room/${roomId}/exit`, {}, getAuthHeader());
+}
