@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import GuestOnlyRoute from './components/GuestOnlyRoute';
 import RedirectHome from './pages/RedirectHome';
 import LoginPage from './pages/LoginPage'
 import LobbyPage from './pages/LobbyPage'
@@ -13,7 +14,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<RedirectHome />} />
-                    <Route path="/login" element={<LoginPage />} />
+                    <Route 
+                        path="/login" 
+                        element={
+                            <GuestOnlyRoute>
+                                <LoginPage />
+                            </GuestOnlyRoute>
+                        } 
+                    />
                     <Route path="/lobby" element={<LobbyPage />} />
                     <Route path="/room/:roomId" element={<RoomPage />} />
                 </Routes>
