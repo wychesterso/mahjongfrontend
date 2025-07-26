@@ -25,7 +25,7 @@ export default function LobbyPage() {
             fetchRooms();
             const interval = setInterval(fetchRooms, 2000); // every 2s
             return () => clearInterval(interval);
-            }
+        }
     }, [user]);
 
     const handleCreateRoom = async () => {

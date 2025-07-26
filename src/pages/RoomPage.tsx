@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
-import { getRoomInfo, exitRoom } from "../api/roomApi";
+import { getRoomInfo, switchSeat, exitRoom } from "../api/roomApi";
 
 interface RoomInfo {
     roomId: string;
@@ -10,6 +10,8 @@ interface RoomInfo {
     playerNames: Record<string, string>;
 }
 
+const SEATS = ["EAST", "SOUTH", "WEST", "NORTH"];
+
 export default function RoomPage() {
     const { roomId } = useParams<{ roomId: string }>();
     const { user } = useAuth();
@@ -17,18 +19,42 @@ export default function RoomPage() {
     const [roomInfo, setRoomInfo] = useState<RoomInfo | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
+    const loadRoom = async () => {
         if (!roomId) return;
+        try {
+            const data = await getRoomInfo(roomId);
+            setRoomInfo(data);
+        } catch (err) {
+            console.error("Error fetching room info: ", err);
+            setError("Could not load room info!");
+        }
+    };
 
-        getRoomInfo(roomId)
-            .then((data) => {
-                setRoomInfo(data);
-            })
-            .catch((err) => {
-                console.error("Error fetching room info: ", err);
-                setError("Could not load room info!");
-            });
+    useEffect(() => {
+        if (roomId) {
+            loadRoom();
+            const interval = setInterval(() => {
+                loadRoom();
+            }, 2000); // every 2s
+            return () => clearInterval(interval);
+        }
     }, [roomId]);
+
+    const [isSwitching, setIsSwitching] = useState(false);
+
+    const handleSeatSwitch = async (seat: string) => {
+        if (!roomId || isSwitching) return;
+        try {
+            setIsSwitching(true);
+            await switchSeat(roomId, seat);
+            await loadRoom();
+        } catch (err) {
+            console.error("Error switching seat: ", err);
+            alert("Failed to switch seat!");
+        } finally {
+            setIsSwitching(false);
+        }
+    }
 
     const handleExitRoom = async () => {
         if (!roomId) return;
@@ -51,12 +77,28 @@ export default function RoomPage() {
             <p><strong>Available Seats:</strong> {roomInfo.numAvailableSeats}</p>
 
             <h3 className="text-lg font-semibold mt-4">Players:</h3>
-            <ul className="mb-4">
-                {Object.entries(roomInfo.playerNames).map(([seat, playerName]) => (
-                    <li key={seat}>
-                        <strong>Seat {seat}:</strong> {playerName}
-                    </li>
-                ))}
+            <ul className="mb-4 space-y-2">
+                {SEATS.map((seat) => {
+                    const occupant = roomInfo.playerNames[seat];
+                    return (
+                        <li key={seat}>
+                            <strong>{seat}:</strong>{" "}
+                            {occupant ? (
+                                <>
+                                    {occupant}
+                                    {occupant === user?.username ? " (You)" : ""}
+                                </>
+                            ) : (
+                                <button
+                                    onClick={() => handleSeatSwitch(seat)}
+                                    className="text-blue-600 hover:underline"
+                                >
+                                    VACANT (click to move here)
+                                </button>
+                            )}
+                        </li>
+                    );
+                })}
             </ul>
 
             <button
