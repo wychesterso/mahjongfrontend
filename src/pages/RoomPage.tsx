@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
-import { getRoomInfo, switchSeat, exitRoom } from "../api/roomApi";
+import { getRoomInfo, switchSeat, addBot, removeBot, exitRoom } from "../api/roomApi";
 
 interface RoomInfo {
     roomId: string;
     hostId: string;
     numAvailableSeats: number;
     playerNames: Record<string, string>;
+    isBot: Record<string, boolean>;
 }
 
 const SEATS = ["EAST", "SOUTH", "WEST", "NORTH"];
@@ -80,21 +81,50 @@ export default function RoomPage() {
             <ul className="mb-4 space-y-2">
                 {SEATS.map((seat) => {
                     const occupant = roomInfo.playerNames[seat];
+                    const isCurrentUser = occupant === user?.username;
+                    const isHost = user?.username === roomInfo.hostId;
+                    const bot = roomInfo.isBot?.[seat] ?? false;
+
                     return (
                         <li key={seat}>
                             <strong>{seat}:</strong>{" "}
                             {occupant ? (
                                 <>
                                     {occupant}
-                                    {occupant === user?.username ? " (You)" : ""}
+                                    {isCurrentUser ? " (You)" : ""}
+                                    {bot && <span className="text-gray-500 ml-2">(Bot)</span>}
+                                    {bot && isHost && (
+                                        <button
+                                            onClick={async () => {
+                                                await removeBot(roomId!, seat);
+                                                await loadRoom();
+                                            }}
+                                            className="ml-2 text-red-600 hover:underline"
+                                        >
+                                            Remove Bot
+                                        </button>
+                                    )}
                                 </>
                             ) : (
-                                <button
-                                    onClick={() => handleSeatSwitch(seat)}
-                                    className="text-blue-600 hover:underline"
-                                >
-                                    VACANT (click to move here)
-                                </button>
+                                <>
+                                    <button
+                                        onClick={() => handleSeatSwitch(seat)}
+                                        className="text-blue-600 hover:underline"
+                                    >
+                                        Sit Here
+                                    </button>
+                                    {isHost && (
+                                        <button
+                                            onClick={async () => {
+                                                await addBot(roomId!, seat);
+                                                await loadRoom();
+                                            }}
+                                            className="text-green-600 hover:underline:"
+                                        >
+                                            Add Bot
+                                        </button>
+                                    )}
+                                </>
                             )}
                         </li>
                     );

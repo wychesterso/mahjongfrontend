@@ -19,6 +19,28 @@ export async function switchSeat(roomId: string, newSeat: string) {
     );
 }
 
+export async function addBot(roomId: string, seat: string) {
+    await axios.post(
+        `${BASE_URL}/room/${roomId}/add-bot`,
+        null,
+        {
+            params: { seat },
+            ...getAuthHeader()
+        }
+    );
+}
+
+export async function removeBot(roomId: string, seat: string) {
+    await axios.post(
+        `${BASE_URL}/room/${roomId}/remove-bot`,
+        null,
+        {
+            params: { seat },
+            ...getAuthHeader()
+        }
+    );
+}
+
 export async function exitRoom(roomId: string) {
     await axios.post(`${BASE_URL}/room/${roomId}/exit`, {}, getAuthHeader());
 }
