@@ -82,11 +82,24 @@ export default function LobbyPage() {
                     <li
                         key={room.roomId}
                         className="mb-2 p-2 border rounded cursor-pointer hover:bg-gray-100"
-                        onClick={() => handleJoinRoom(room.roomId)}
                     >
                         <div><strong>Room ID:</strong> {room.roomId}</div>
                         <div><strong>Host:</strong> {room.host}</div>
                         <div><strong>Available Seats:</strong> {room.availableSeats}</div>
+                        <div className="mt-2 flex gap-2">
+                            <button
+                                className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                onClick={() => navigate(`/room/${room.roomId}`)}
+                            >
+                                View
+                            </button>
+                            <button
+                                className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                onClick={() => handleJoinRoom(room.roomId)}
+                            >
+                                Join
+                            </button>
+                        </div>
                     </li>
                 ))}
             </ul>
