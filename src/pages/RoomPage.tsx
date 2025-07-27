@@ -42,6 +42,7 @@ export default function RoomPage() {
     }, [roomId]);
 
     const [isSwitching, setIsSwitching] = useState(false);
+    const isSeated = Object.values(roomInfo?.playerNames ?? {}).includes(user?.username ?? "");
 
     const handleSeatSwitch = async (seat: string) => {
         if (!roomId || isSwitching) return;
@@ -131,12 +132,14 @@ export default function RoomPage() {
                 })}
             </ul>
 
-            <button
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                onClick={handleExitRoom}
-            >
-                Exit Room
-            </button>
+            {isSeated && (
+                <button
+                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                    onClick={handleExitRoom}
+                >
+                    Exit Room
+                </button>
+            )}
         </div>
     );
 }
