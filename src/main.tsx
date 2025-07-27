@@ -7,6 +7,7 @@ import RedirectHome from './pages/RedirectHome';
 import LoginPage from './pages/LoginPage'
 import LobbyPage from './pages/LobbyPage'
 import RoomPage from './pages/RoomPage'
+import GamePage from './pages/GamePage'
 import { AuthProvider } from './auth/AuthContext'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -36,6 +37,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                         element={
                             <PrivateRoute>
                                 <RoomPage />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/room/:roomId/game"
+                        element={
+                            <PrivateRoute>
+                                <GamePage />
                             </PrivateRoute>
                         }
                     />
