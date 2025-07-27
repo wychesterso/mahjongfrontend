@@ -8,7 +8,7 @@ interface RoomInfo {
     hostId: string;
     numAvailableSeats: number;
     playerNames: Record<string, string>;
-    isBot: Record<string, boolean>;
+    botStatuses: Record<string, boolean>;
 }
 
 const SEATS = ["EAST", "SOUTH", "WEST", "NORTH"];
@@ -83,7 +83,7 @@ export default function RoomPage() {
                     const occupant = roomInfo.playerNames[seat];
                     const isCurrentUser = occupant === user?.username;
                     const isHost = user?.username === roomInfo.hostId;
-                    const bot = roomInfo.isBot?.[seat] ?? false;
+                    const bot = roomInfo.botStatuses?.[seat] ?? false;
 
                     return (
                         <li key={seat}>
@@ -92,7 +92,7 @@ export default function RoomPage() {
                                 <>
                                     {occupant}
                                     {isCurrentUser ? " (You)" : ""}
-                                    {bot && <span className="text-gray-500 ml-2">(Bot)</span>}
+                                    {bot && <span className="text-gray-500 ml-2"> (Bot) </span>}
                                     {bot && isHost && (
                                         <button
                                             onClick={async () => {
@@ -119,7 +119,7 @@ export default function RoomPage() {
                                                 await addBot(roomId!, seat);
                                                 await loadRoom();
                                             }}
-                                            className="text-green-600 hover:underline:"
+                                            className="text-green-600 hover:underline"
                                         >
                                             Add Bot
                                         </button>
