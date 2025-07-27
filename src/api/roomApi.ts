@@ -8,6 +8,17 @@ export async function getRoomInfo(roomId: string) {
     return res.data;
 }
 
+export async function joinRoom(roomId: string, seat: string) {
+    await axios.post(
+        `${BASE_URL}/room/${roomId}/join`,
+        null,
+        {
+            params: { seat },
+            ...getAuthHeader()
+        }
+    );
+}
+
 export async function switchSeat(roomId: string, newSeat: string) {
     await axios.post(
         `${BASE_URL}/room/${roomId}/seat`, 

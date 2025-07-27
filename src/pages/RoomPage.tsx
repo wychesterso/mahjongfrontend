@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
-import { getRoomInfo, switchSeat, addBot, removeBot, exitRoom } from "../api/roomApi";
+import { getRoomInfo, joinRoom, switchSeat, addBot, removeBot, exitRoom } from "../api/roomApi";
 
 interface RoomInfo {
     roomId: string;
@@ -109,7 +109,14 @@ export default function RoomPage() {
                             ) : (
                                 <>
                                     <button
-                                        onClick={() => handleSeatSwitch(seat)}
+                                        onClick={async () => {
+                                            if (isSeated) {
+                                                await handleSeatSwitch(seat);
+                                            } else {
+                                                await joinRoom(roomId!, seat);
+                                            }
+                                            await loadRoom();
+                                        }}
                                         className="text-blue-600 hover:underline"
                                     >
                                         Sit Here
