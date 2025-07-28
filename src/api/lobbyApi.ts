@@ -12,25 +12,3 @@ export async function createRoom() {
     const res = await axios.post(`${BASE_URL}/room/create`, {}, getAuthHeader());
     return res.data.roomId;
 }
-
-export async function getRoomInfo(roomId: string) {
-    const res = await axios.get(`${BASE_URL}/room/${roomId}`, getAuthHeader());
-    return res.data;
-}
-
-export async function addBot(roomId: string) {
-    await axios.post(`${BASE_URL}/room/${roomId}/add-bot`, {}, getAuthHeader());
-}
-
-export async function startGame(roomId: string) {
-    await axios.post(`${BASE_URL}/room/${roomId}/start`, {}, getAuthHeader());
-}
-
-export async function joinRoom(roomId: string, seat: string) {
-    const params = new URLSearchParams({ seat });
-    await axios.post(`${BASE_URL}/room/${roomId}/join?${params}`, {}, getAuthHeader());
-}
-
-export async function leaveRoom(roomId: string) {
-    await axios.post(`${BASE_URL}/room/${roomId}/exit`, {}, getAuthHeader());
-}

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
-import { getAvailableRooms, getRoomInfo, createRoom, joinRoom } from "../api/lobbyApi";
+import { getAvailableRooms, createRoom } from "../api/lobbyApi";
+import { getRoomInfo, joinRoom } from "../api/roomApi";
 import { getUserSeat } from "../utils/roomHelpers";
 
 export default function LobbyPage() {

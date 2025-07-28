@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { getRoomInfo, joinRoom, switchSeat, addBot, removeBot, exitRoom } from "../api/roomApi";
+import { getUserSeat } from "../utils/roomHelpers";
 
 interface RoomInfo {
     roomId: string;
@@ -42,7 +43,8 @@ export default function RoomPage() {
     }, [roomId]);
 
     const [isSwitching, setIsSwitching] = useState(false);
-    const isSeated = Object.values(roomInfo?.playerNames ?? {}).includes(user?.username ?? "");
+    const userSeat = roomInfo ? getUserSeat(roomInfo.playerNames, user?.username) : null;
+    const isSeated = !!userSeat;
 
     const handleSeatSwitch = async (seat: string) => {
         if (!roomId || isSwitching) return;
