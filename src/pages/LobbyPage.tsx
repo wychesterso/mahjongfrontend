@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { getAvailableRooms, getRoomInfo, createRoom, joinRoom } from "../api/lobbyApi";
-import { useAuth } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
+import { getAvailableRooms, getRoomInfo, createRoom, joinRoom } from "../api/lobbyApi";
+import { getUserSeat } from "../utils/roomHelpers";
 
 export default function LobbyPage() {
     const { user } = useAuth();
@@ -41,10 +42,9 @@ export default function LobbyPage() {
     const handleJoinRoom = async (roomId: string) => {
         try {
             const room = await getRoomInfo(roomId);
-            const currentPlayer = user?.username;
+            const playerSeat = getUserSeat(room.playerNames, user?.username);
 
-            const playerAlreadyJoined = Object.values(room.playerNames).includes(currentPlayer);
-            if (!playerAlreadyJoined) {
+            if (playerSeat === null) {
                 const allSeats = ["EAST", "SOUTH", "WEST", "NORTH"];
                 const takenSeats = Object.keys(room.playerNames);
                 const availableSeats = allSeats.filter(seat => !takenSeats.includes(seat));
@@ -78,32 +78,47 @@ export default function LobbyPage() {
             </button>
 
             <ul>
-                {rooms.map((room) => (
-                    <li
-                        key={room.roomId}
-                        className="mb-2 p-2 border rounded cursor-pointer hover:bg-gray-100"
-                    >
-                        <div><strong>Room ID:</strong> {room.roomId}</div>
-                        <div><strong>Host:</strong> {room.host}</div>
-                        <div><strong>Available Seats:</strong> {room.availableSeats}</div>
-                        <div className="mt-2 flex gap-2">
-                            <button
-                                className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                                onClick={() => navigate(`/room/${room.roomId}`)}
-                            >
-                                View
-                            </button>
-                            {room.availableSeats > 0 && (
-                                <button
-                                    className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                                    onClick={() => handleJoinRoom(room.roomId)}
-                                >
-                                    Join
-                                </button>
-                            )}
-                        </div>
-                    </li>
-                ))}
+                {rooms.map((room) => {
+                    const playerSeat = getUserSeat(room.playerNames, user?.username);
+
+                    return (
+                        <li
+                            key={room.roomId}
+                            className="mb-2 p-2 border rounded cursor-pointer hover:bg-gray-100"
+                        >
+                            <div><strong>Room ID:</strong> {room.roomId}</div>
+                            <div><strong>Host:</strong> {room.host}</div>
+                            <div><strong>Available Seats:</strong> {room.availableSeats}</div>
+                            <div className="mt-2 flex gap-2">
+                                {playerSeat ? (
+                                    <button
+                                        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                        onClick={() => navigate(`/room/${room.roomId}`)}
+                                    >
+                                        Rejoin
+                                    </button>
+                                ) : (
+                                    <>
+                                        <button
+                                            className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                            onClick={() => navigate(`/room/${room.roomId}`)}
+                                        >
+                                            View
+                                        </button>
+                                        {room.availableSeats > 0 && (
+                                            <button
+                                                className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                                onClick={() => handleJoinRoom(room.roomId)}
+                                            >
+                                                Join
+                                            </button>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        </li>
+                    );
+                })}
             </ul>
         </div>
     );
