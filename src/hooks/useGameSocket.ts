@@ -10,16 +10,16 @@ export default function useGameSocket(playerId: string, roomId: string, onMessag
     useEffect(() => {
         const socket = new SockJS("/ws");
         const client = over(socket);
-        client.debug = () => {}; // Optional: silence logs
+        client.debug = () => {};
 
         client.connect({}, () => {
-            // Subscribe to user-specific queue
+            // subscribe to user-specific queue
             client.subscribe("/user/queue/game", (msg) => {
                 const payload = JSON.parse(msg.body);
                 onMessage(payload);
             });
 
-            // Subscribe to room-wide topic
+            // subscribe to room-wide topic
             client.subscribe(`/topic/room/${roomId}`, (msg) => {
                 const payload = JSON.parse(msg.body);
                 onMessage(payload);
