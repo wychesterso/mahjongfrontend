@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getGameState } from "../api/gameApi";
-import GameBoard from "../components/game/GameBoard";
-import PromptModal from "../components/game/GameLog";
-import useGameSocket from "../hooks/useGameSocket";
+// import GameBoard from "../components/game/GameBoard";
+// import PromptModal from "../components/game/GameLog";
+import { useGameSocket } from "../hooks/useGameSocket";
 
 const SEATS = ["EAST", "SOUTH", "WEST", "NORTH"];
 
@@ -13,14 +13,6 @@ export default function GamePage() {
     const [prompt, setPrompt] = useState<any>(null);
     const [log, setLog] = useState<string[]>([]);
     const [currentSeat, setCurrentSeat] = useState("SOUTH"); // TODO: determine seat based on user
-
-    // TODO: replace with backend values
-    const players = {
-        EAST: "Alice",
-        SOUTH: "You",
-        WEST: "Charlie",
-        NORTH: "Diana",
-    };
 
     const hands = {
         EAST: 13,
@@ -74,16 +66,16 @@ export default function GamePage() {
         <div className="p-4">
             <h1 className="text-xl font-bold mb-4">Game Room: {roomId}</h1>
 
-            <GameBoard
-                players={players}
+            {/* <GameBoard
+                players={gameState?.playerNames || {}}
                 hands={hands}
                 discards={discards}
                 drawPile={drawPile}
                 currentSeat={currentSeat}
-            />
+            /> */}
 
-            <PromptModal prompt={prompt?.message} />
-            <GameLog log={log} />
+            {/* <PromptModal prompt={prompt?.message} /> */}
+            {/* <GameLog log={log} /> */}
         </div>
     );
 }
