@@ -7,3 +7,7 @@ export async function getGameState(roomId: string) {
     const res = await axios.get(`${BASE_URL}/room/${roomId}/game`, getAuthHeader());
     return res.data;
 }
+
+export async function startGame(roomId: string) {
+    await axios.post(`${BASE_URL}/room/${roomId}/start`, null, getAuthHeader());
+}

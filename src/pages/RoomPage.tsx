@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { getRoomInfo, joinRoom, switchSeat, addBot, removeBot, exitRoom } from "../api/roomApi";
+import { startGame } from "../api/gameApi";
 import { getUserSeat } from "../utils/roomHelpers";
 
 interface RoomInfo {
@@ -140,6 +141,23 @@ export default function RoomPage() {
                     );
                 })}
             </ul>
+
+            {user?.username === roomInfo.hostId && roomInfo.numAvailableSeats === 0 && (
+                <button
+                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 mr-2"
+                    onClick={async () => {
+                        try {
+                            await startGame(roomId!);
+                            navigate(`/room/${roomId}/game`);
+                        } catch (err) {
+                            console.error("Failed to start game: ", err);
+                            alert("Could not start game!");
+                        }
+                    }}
+                >
+                    Start Game
+                </button>
+            )}
 
             {isSeated && (
                 <button

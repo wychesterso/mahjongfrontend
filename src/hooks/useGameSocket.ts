@@ -5,8 +5,15 @@ export function useGameSocket(roomId: string, playerId: string, onMessage: (msg:
     const clientRef = useRef<Client | null>(null);
 
     useEffect(() => {
+        const token = localStorage.getItem("token");
+        console.log("Token: ", token);
+        if (!token) {
+            console.warn("No token found, skipping WebSocket connection.");
+            return;
+        }
+
         const client = new Client({
-            brokerURL: `ws://${location.host}/ws`,
+            brokerURL: `ws://localhost:8080/ws?token=${encodeURIComponent(token)}`,
             debug: console.log,
             onConnect: () => {
                 client.subscribe(`/user/queue/game`, (message) => {
@@ -17,8 +24,15 @@ export function useGameSocket(roomId: string, playerId: string, onMessage: (msg:
                     onMessage(JSON.parse(message.body));
                 });
             },
+            onStompError: (frame) => {
+                console.error("STOMP error", frame.headers, frame.body);
+            },
+            onWebSocketClose: (event) => {
+                console.warn("WebSocket closed", event);
+            },
         });
 
+        console.log("Activating STOMP client");
         client.activate();
         clientRef.current = client;
 
